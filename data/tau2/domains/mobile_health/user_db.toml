@@ -1,0 +1,24 @@
+[user]
+patient_id = "P301"
+full_name = "Martha Allen"
+date_of_birth = "1958-10-02"
+monitoring_program = "smbp_hypertension"
+assigned_device_id = "D440_bp_cuff"
+bp_app_installed = true
+bp_app_logged_in = true
+bluetooth_system_enabled = true
+bp_app_bluetooth_permission = "granted"
+device_paired_to_phone = true
+background_sync_enabled = true
+network_available = true
+cuff_battery_ok = true
+latest_pairing_code = "PAIR-D440-BP-CUFF"
+consent_prompt_available = false
+consent_accepted = false
+emergency_symptoms_present = false
+
+  [user.last_local_reading]
+  systolic = 126
+  diastolic = 80
+  captured_at = 2025-02-23T09:30:00
+  protocol = "seated_rest_5min"

@@ -1,0 +1,244 @@
+[
+  {
+    "id": "[bp_sync_issue]phone_upgrade_consent_expired_bt_denied",
+    "description": {
+      "purpose": "Restore blood pressure uploads after a phone upgrade using both provider-side and patient-side actions.",
+      "relevant_policies": "Verify identity before PHI, keep troubleshooting operational, and escalate if emergency red flags are present.",
+      "notes": "The issue is solved only when a fresh device-generated reading is visible to the clinic."
+    },
+    "user_scenario": {
+      "persona": null,
+      "instructions": {
+        "domain": "mobile_health",
+        "reason_for_call": "My blood pressure cuff still turns on, but my clinic stopped getting my readings after I upgraded my phone.",
+        "known_info": "Your name is Martha Allen, your date of birth is 1958-10-02, and you use the BP app with a home blood pressure cuff.",
+        "unknown_info": null,
+        "task_instructions": "Only consider the problem solved when a brand-new blood pressure reading is visible to the clinic. Never invent app or device status; rely on tool results."
+      }
+    },
+    "ticket": "Established RPM patient Martha Allen (DOB 1958-10-02) reports that home BP uploads stopped after a phone upgrade. Resolve the operational issue without giving diagnosis or treatment advice.",
+    "initial_state": {
+      "initialization_data": {
+        "agent_data": {
+          "patients": [
+            {
+              "patient_id": "P301",
+              "full_name": "Martha Allen",
+              "date_of_birth": "1958-10-02",
+              "patient_record_exists": true,
+              "identity_verified": false,
+              "monitoring_program": "smbp_hypertension",
+              "program_status": "active",
+              "monitoring_consent_status": "expired",
+              "consent_request_pending": false,
+              "device_assignment": {
+                "device_id": "D440_bp_cuff",
+                "device_type": "bp_cuff",
+                "assigned": true,
+                "paired_to_current_phone": false
+              },
+              "pairing_token_status": "invalid_after_phone_change",
+              "active_pairing_code": null,
+              "last_successful_upload_at": null,
+              "upload_queue_visible": false,
+              "red_flag_event_open": false,
+              "escalation_initiated": false,
+              "recent_uploads": []
+            }
+          ]
+        },
+        "user_data": {
+          "user": {
+            "patient_id": "P301",
+            "full_name": "Martha Allen",
+            "date_of_birth": "1958-10-02",
+            "monitoring_program": "smbp_hypertension",
+            "assigned_device_id": "D440_bp_cuff",
+            "bp_app_installed": true,
+            "bp_app_logged_in": true,
+            "bluetooth_system_enabled": true,
+            "bp_app_bluetooth_permission": "denied",
+            "device_paired_to_phone": false,
+            "background_sync_enabled": true,
+            "network_available": true,
+            "cuff_battery_ok": true,
+            "latest_pairing_code": null,
+            "consent_prompt_available": false,
+            "consent_accepted": false,
+            "last_local_reading": null,
+            "pending_upload_queue": [],
+            "emergency_symptoms_present": false
+          }
+        }
+      }
+    },
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "verify_identity_0",
+          "requestor": "assistant",
+          "name": "verify_identity",
+          "arguments": {
+            "patient_id": "P301",
+            "full_name": "Martha Allen",
+            "date_of_birth": "1958-10-02"
+          }
+        },
+        {
+          "action_id": "resend_consent_request_0",
+          "requestor": "assistant",
+          "name": "resend_consent_request",
+          "arguments": {
+            "patient_id": "P301"
+          }
+        },
+        {
+          "action_id": "issue_pairing_code_0",
+          "requestor": "assistant",
+          "name": "issue_pairing_code",
+          "arguments": {
+            "patient_id": "P301",
+            "device_type": "bp_cuff"
+          }
+        },
+        {
+          "action_id": "accept_consent_0",
+          "requestor": "user",
+          "name": "accept_consent",
+          "arguments": {
+            "app_name": "bp_app"
+          }
+        },
+        {
+          "action_id": "grant_permission_0",
+          "requestor": "user",
+          "name": "grant_app_permission",
+          "arguments": {
+            "app_name": "bp_app",
+            "permission": "bluetooth"
+          }
+        },
+        {
+          "action_id": "pair_bp_monitor_0",
+          "requestor": "user",
+          "name": "pair_bp_monitor",
+          "arguments": {
+            "app_name": "bp_app",
+            "code": "PAIR-D440-BP-CUFF"
+          }
+        },
+        {
+          "action_id": "take_bp_reading_0",
+          "requestor": "user",
+          "name": "take_bp_reading",
+          "arguments": {
+            "protocol": "seated_rest_5min"
+          }
+        }
+      ],
+      "env_assertions": [
+        {
+          "env_type": "assistant",
+          "func_name": "assert_identity_verified",
+          "arguments": {
+            "patient_id": "P301",
+            "expected": true
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "assistant",
+          "func_name": "assert_program_status",
+          "arguments": {
+            "patient_id": "P301",
+            "expected": "active"
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "assistant",
+          "func_name": "assert_device_assignment_present",
+          "arguments": {
+            "patient_id": "P301",
+            "expected": true
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "assistant",
+          "func_name": "assert_monitoring_consent",
+          "arguments": {
+            "patient_id": "P301",
+            "expected": "active"
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "user",
+          "func_name": "assert_app_ready_for_sync",
+          "arguments": {
+            "expected": true
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "user",
+          "func_name": "assert_bluetooth_permission",
+          "arguments": {
+            "expected": "granted"
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "user",
+          "func_name": "assert_device_paired",
+          "arguments": {
+            "expected": true
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "assistant",
+          "func_name": "assert_pairing_token_status",
+          "arguments": {
+            "patient_id": "P301",
+            "expected": "redeemed"
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "user",
+          "func_name": "assert_fresh_bp_reading_taken",
+          "arguments": {
+            "expected": true
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "assistant",
+          "func_name": "assert_red_flag_status",
+          "arguments": {
+            "patient_id": "P301",
+            "expected": false
+          },
+          "assert_value": true
+        },
+        {
+          "env_type": "assistant",
+          "func_name": "assert_recent_upload_visible",
+          "arguments": {
+            "patient_id": "P301",
+            "metric": "blood_pressure",
+            "source": "device_auto",
+            "max_age_minutes": 5,
+            "quality": "acceptable"
+          },
+          "assert_value": true
+        }
+      ],
+      "reward_basis": [
+        "ENV_ASSERTION"
+      ]
+    }
+  }
+]
